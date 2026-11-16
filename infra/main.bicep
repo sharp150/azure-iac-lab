@@ -1,6 +1,6 @@
 // Starter: secure storage account in an existing resource group
 @description('Location for resources')
-param location string = 'uksouth'
+param location string = resourceGroup().location
 
 @description('Short prefix for names (lowercase, 3-11 chars)')
 @minLength(3)
@@ -13,6 +13,7 @@ var tags = {
   managedBy: 'bicep'
 }
 
+@description('Lab storage account: private, Entra-only access, TLS 1.2')
 resource sa 'Microsoft.Storage/storageAccounts@2023-05-01' = {
   name: '${prefix}${uniqueString(resourceGroup().id)}'
   location: location
@@ -29,6 +30,7 @@ resource sa 'Microsoft.Storage/storageAccounts@2023-05-01' = {
   }
 }
 
+@description('Lab Key Vault: RBAC, purge protection, private')
 module kv 'br/public:avm/res/key-vault/vault:0.14.2' = {
   name: 'keyVaultDeployment'
   params: {
