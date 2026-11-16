@@ -29,4 +29,21 @@ resource sa 'Microsoft.Storage/storageAccounts@2023-05-01' = {
   }
 }
 
+module kv 'br/public:avm/res/key-vault/vault:0.14.2' = {
+  name: 'keyVaultDeployment'
+  params: {
+    name: 'kv${uniqueString(resourceGroup().id)}'
+    location: location
+    tags: tags
+    sku: 'standard'
+    enableRbacAuthorization: true
+    enablePurgeProtection: true
+    publicNetworkAccess: 'Disabled'
+    enableVaultForDeployment: false
+    enableVaultForTemplateDeployment: false
+    enableVaultForDiskEncryption: false
+    enableTelemetry: false
+  }
+}
+
 output storageAccountName string = sa.name

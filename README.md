@@ -6,3 +6,9 @@
 4. Clean up when done: `az group delete -n rg-wr-lab-uks` (run yourself; Claude is blocked from deleting)
 
 In Claude Code try: "Read CLAUDE.md, then add a Key Vault with RBAC auth and private access to infra/main.bicep and run what-if."
+
+## Pipeline (phase 0)
+- `.github/workflows/infra.yml`: validate (Bicep lint + PSRule) -> what-if (`lab-plan` env) -> deploy (`lab` env, needs Wayne's approval).
+- Azure sign-in uses OIDC workload identity federation (app `gh-azure-iac-lab-oidc`), Contributor on `rg-wr-lab-uks` only. No secrets stored.
+- Budget alert: `lab-monthly-150` on Silveroak-dev (80% actual, 100% forecast).
+- Rule: never commit client data, real names, IPs or credentials. This repo is public.
