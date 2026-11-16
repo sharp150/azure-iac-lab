@@ -1,0 +1,30 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(az account show:*)",
+      "Bash(az bicep build:*)",
+      "Bash(az bicep lint:*)",
+      "Bash(az deployment group what-if:*)",
+      "Bash(az group show:*)",
+      "Bash(az resource list:*)",
+      "Bash(git status)",
+      "Bash(git diff:*)"
+    ],
+    "ask": [
+      "Bash(az deployment:*)",
+      "Bash(az group create:*)",
+      "Bash(git push:*)",
+      "Bash(git commit:*)"
+    ],
+    "deny": [
+      "Bash(az group delete:*)",
+      "Bash(az * delete:*)",
+      "Bash(az role assignment:*)",
+      "Bash(az ad:*)",
+      "Bash(az account set:*)",
+      "Bash(az keyvault secret show:*)",
+      "Read(./.env)",
+      "Read(./**/*.pfx)"
+    ]
+  }
+}
