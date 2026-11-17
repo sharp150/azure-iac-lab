@@ -1,0 +1,23 @@
+# PSRule exceptions. See "PSRule exceptions" in README.md for the process.
+# Every exception needs a PR approved by Wayne (CODEOWNERS) and must expire.
+#
+# Template (keep commented out until an approved exception is needed):
+#   - rule:      the rule name(s) being excepted
+#   - if:        the target resource (narrow it to one resource by name)
+#   - Synopsis:  the reason, plus a link to the approving PR
+#   - expiresOn: UTC date no more than 90 days after the PR is opened.
+#                After this date the run fails (execution.suppressionGroupExpired: Error).
+#
+# ---
+# # Synopsis: Lab storage holds no data; LRS accepted to keep cost minimal. Approved in PR #<n>.
+# apiVersion: github.com/microsoft/PSRule/v1
+# kind: SuppressionGroup
+# metadata:
+#   name: Lab.Storage.UseReplication.Example
+# spec:
+#   expiresOn: '2027-02-14T00:00:00Z'
+#   rule:
+#     - Azure.Storage.UseReplication
+#   if:
+#     name: '.'
+#     equals: 'wrlab5f3e65afb63bb'

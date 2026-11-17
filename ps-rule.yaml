@@ -1,0 +1,45 @@
+# PSRule for Azure options. Changes to this file need Wayne's approval (see CODEOWNERS).
+# Docs: https://azure.github.io/PSRule.Rules.Azure/setup/configuring-options/
+
+# Fail fast if CI or a local run uses a different engine or rules module.
+# Bump these together with the baseline, once a quarter, in its own PR.
+requires:
+  PSRule: '2.9.0'
+  PSRule.Rules.Azure: '1.47.0'
+
+include:
+  module:
+    - PSRule.Rules.Azure
+
+# Newest GA baseline shipped by PSRule.Rules.Azure 1.47.0.
+# PSRule 2.x selects a baseline at run time, so CI and local runs pass `-Baseline '@pinned'`.
+baseline:
+  group:
+    pinned: Azure.GA_2025_12
+
+configuration:
+  # Expand Bicep files (and the AVM modules they reference) into resources for analysis.
+  AZURE_BICEP_FILE_EXPANSION: true
+  AZURE_BICEP_FILE_EXPANSION_TIMEOUT: 30
+  # AVM key-vault module's `keys` param holds key definitions, not secret material,
+  # but trips the name match in Azure.Deployment.SecureParameter. Approved by Wayne in PR 1.1.
+  AZURE_DEPLOYMENT_NONSENSITIVE_PARAMETER_NAMES:
+    - keys
+
+input:
+  pathIgnore:
+    # Analyse Bicep under infra/ only.
+    - '**'
+    - '!infra/**/*.bicep'
+
+execution:
+  # Any failing rule fails the run (Assert-PSRule exits non-zero on a Fail outcome).
+  # These make the remaining non-pass states block too.
+  ruleInconclusive: Error
+  suppressionGroupExpired: Error
+
+output:
+  outcome: Processed
+  as: Detail
+  culture:
+    - en-GB
