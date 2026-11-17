@@ -1,0 +1,6 @@
+# Wayne must approve every change. The explicit lines keep pipeline and
+# PSRule gate ownership clear if the default rule is ever narrowed.
+*                   @sharp150
+/.github/           @sharp150
+/ps-rule.yaml       @sharp150
+/.ps-rule/          @sharp150

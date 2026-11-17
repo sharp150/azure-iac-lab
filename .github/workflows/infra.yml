@@ -2,10 +2,10 @@ name: infra
 
 on:
   pull_request:
-    paths: ['infra/**', '.github/workflows/infra.yml']
+    paths: ['infra/**', '.github/workflows/infra.yml', 'ps-rule.yaml', '.ps-rule/**']
   push:
     branches: [main]
-    paths: ['infra/**', '.github/workflows/infra.yml']
+    paths: ['infra/**', '.github/workflows/infra.yml', 'ps-rule.yaml', '.ps-rule/**']
   workflow_dispatch:
 
 permissions:
@@ -23,12 +23,30 @@ jobs:
       - uses: actions/checkout@v4
       - name: Bicep build and lint
         run: az bicep build --file $TEMPLATE
-      - name: PSRule for Azure (Well-Architected checks)
-        uses: microsoft/ps-rule@v2
-        continue-on-error: true   # report only during phase 0
+      # Pre-install the pinned versions; the action reuses installed modules
+      # instead of pulling latest. Keep in step with `requires` in ps-rule.yaml.
+      - name: Install pinned PSRule modules
+        shell: pwsh
+        run: |
+          Install-Module PSRule -RequiredVersion 2.9.0 -Repository PSGallery -Scope CurrentUser -Force
+          Install-Module PSRule.Rules.Azure -RequiredVersion 1.47.0 -Repository PSGallery -Scope CurrentUser -Force
+      - name: PSRule for Azure (blocking)
+        uses: microsoft/ps-rule@46451b8f5258c41beb5ae69ed7190ccbba84112c # v2.9.0
         with:
+          version: '2.9.0'
           modules: PSRule.Rules.Azure
+          option: ps-rule.yaml
+          baseline: '@pinned'   # Azure.GA_2025_12, set in ps-rule.yaml
           inputPath: infra/
+          outputFormat: Sarif
+          outputPath: reports/ps-rule-results.sarif
+      - name: Upload PSRule results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ps-rule-results
+          path: reports/ps-rule-results.sarif
+          if-no-files-found: warn
 
   whatif:
     needs: validate
